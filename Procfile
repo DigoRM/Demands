@@ -1,1 +1,1 @@
-web: gunicorn distribute.wsgi --log-file -
+web: python manage.py migrate && gunicorn distribute.wsgi
