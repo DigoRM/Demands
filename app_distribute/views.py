@@ -273,7 +273,7 @@ def upload_orders(request):
                     partner=row['parceiro'],
                     # add other fields as necessary
                     parceiro=parceiro,
-                    price=row['price']
+                    price=price
                 )
 
                 # Associate the task with the corresponding Parceiro for this row
