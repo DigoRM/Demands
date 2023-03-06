@@ -12,13 +12,12 @@
                     <thead style="position: sticky;top: 0;background-color: #fff; z-index: 1;">
                         <thead>
                             <tr>
+                                <th>Order ID</th>
                                 <th>Sent to CI</th>
-                                <th>Solved at</th>
                                 <th>Parceiro</th>
                                 <th>Order Link</th>
-                                <th>Description</th>
                                 <th>Solved Task?</th>
-                                <th>Order ID</th>
+                                <th>Description</th>
                                 <th>Order Date</th>
                                 <th>Loja ID</th>
                                 <th>Loja</th>
@@ -31,11 +30,22 @@
                         <tbody>
                             {% for task, form in forms %}
                             <tr>
-                                <td>{{task.task_added_at|date:"d/m/Y H:i"}} </td>
-                                <td>{{task.task_updated_at|date:"d/m/Y H:i"}} </td>
+                                <td>{{ task.order_id }}</td>
+
+                                <td>{{task.task_added_at|date:"d/m/Y"}} </td>
                                     <td><a href="{% url 'parceiro_tasks' pk=task.parceiro.pk %} ">{{ task.partner }}</a></td>
 
                                     <td><a href="{{ task.order_link }}">{{ task.order_link }}</a></td>
+                                    <td>
+                                        {% if not task.is_solved %}
+                                            <form method="post" action="{% url 'mark_task_solved' task.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Once the task is solved, you are removing it from you main page, ok?')" >DONE</button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-success">Solved</span>
+                                        {% endif %}
+                                    </td>
 
                                     <td>
                                         {% if not task.is_solved %}
@@ -48,17 +58,7 @@
                                         <td>{{task.description}}</td>
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        {% if not task.is_solved %}
-                                            <form method="post" action="{% url 'mark_task_solved' task.pk %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Once the task is solved, you are removing it from you main page, ok?')" >DONE</button>
-                                            </form>
-                                        {% else %}
-                                            <span class="text-success">Solved</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ task.order_id }}</td>
+
                                     <td>{{ task.created_at|date:"d/m/Y H:i" }}</td>
                                     <td>{{ task.loja_id }}</td>
                                     <td>{{ task.loja }}</td>
