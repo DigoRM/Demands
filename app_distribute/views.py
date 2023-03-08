@@ -121,7 +121,7 @@ def home(request):
     # Retrieve all unsolved tasks and group by assigned user
     user_tasks = {}
     for partner in Parceiro.objects.annotate(num_tasks=Count('tasks', filter=Q(tasks__is_solved=False))).order_by('-num_tasks'):
-        tasks = Task.objects.filter(is_solved=False, partner=partner).order_by('-task_added_at')
+        tasks = Task.objects.filter(is_solved=False, partner=partner).order_by('-task_added_at')[:50]
         for task in tasks:
             assigned_to = task.assigned_to
             if assigned_to:
@@ -135,17 +135,21 @@ def home(request):
 
 @login_required
 def home_solved(request):
-    # Retrieve all unsolved tasks and group by assigned user
+    # Retrieve all solved tasks and group by assigned user
     user_tasks = {}
-    for task in Task.objects.filter(is_solved=True):
+    for task in Task.objects.filter(is_solved=True).order_by('-task_updated_at')[:50]:
         assigned_to = task.assigned_to
         if assigned_to:
             user_tasks.setdefault(assigned_to.username, []).append(task)
+            # limit the number of tasks to 50
+            if len(user_tasks[assigned_to.username]) == 70:
+                break
 
     context = {
         'user_tasks': user_tasks,
     }
     return render(request, 'home_solved.html', context)
+
 
 @login_required
 def my_tasks(request, pk=None):
@@ -177,10 +181,11 @@ def my_tasks(request, pk=None):
     return render(request, 'my_tasks.html', context)
 
 
+
 @login_required
 def my_done_tasks(request):
     user = request.user
-    tasks = Task.objects.filter(assigned_to=user, is_solved=True)
+    tasks = Task.objects.filter(assigned_to=user, is_solved=True)[:70]
     context = {'tasks': tasks}
     return render(request, 'my_solved_tasks.html', context)
 
@@ -404,12 +409,21 @@ def parceiro_tasks(request, pk=None):
 
 def parceiro_solved_tasks(request, pk=None):
     parceiro = get_object_or_404(Parceiro, pk=pk)
-    parceiro_tasks = parceiro.tasks.filter(is_solved=True)
+    parceiro_tasks = parceiro.tasks.filter(is_solved=True).order_by('-task_updated_at')[:50]
+    
+    assigned_tasks = {}
+    for task in parceiro_tasks:
+        assigned_to = task.assigned_to
+        if assigned_to:
+            assigned_tasks.setdefault(assigned_to.username, []).append(task)  
+
 
     
     context = {
         'parceiro': parceiro,
         'parceiro_tasks':parceiro_tasks,
+        'assigned_tasks': assigned_tasks,
+
     }
     return render(request, 'parceiro_solved_tasks.html', context)
 

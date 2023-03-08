@@ -37,7 +37,7 @@
                             {% for task in tasks %}
                                 <tr>
                                     <td>{{ task.order_id }}</td>
-                                    <td>{{task.task_added_at|date:"d/m/Y H:i"}} </td>
+                                    <td>{{task.task_added_at|date:"d/m/Y"}} </td>
                                     <td>{{ task.partner }}</td>
                                     <td><a href="{{ task.order_link }}">{{ task.order_link }}</a></td>
                                     <td style="vertical-align:middle">
@@ -57,7 +57,7 @@
                                             <button type="submit" class="btn btn-sm btn-info">Save</button>
                                         </form>
                                     </td>
-                                    <td>{{ task.created_at }}</td>
+                                    <td>{{ task.created_at|date:"d/m/Y" }}</td>
                                     <td>{{ task.loja_id }}</td>
                                     <td>{{ task.loja }}</td>
                                     <td>{{ task.empresa }}</td>

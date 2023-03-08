@@ -10,14 +10,11 @@
                 <table class="table table-striped table-bordered">
                     <thead style="position: sticky;top: 0;background-color: #fff; z-index: 1;">
                         <tr>
-                            <th>Task Sent</th>
-                            <th>Solved</th>
-                            <th>Unsolved Task?</th>
                             <th>Order ID</th>
+                            <th>Task Sent</th>
+                            <th>Order Link</th>
                             <th>Order Date</th>
                             <th>Parceiro</th>
-                            <th>Order Link</th>
-                            <th>Loja ID</th>
                             <th>Loja</th>
                             <th>Empresa</th>
                             <th>Integracao</th>
@@ -29,25 +26,13 @@
                     <tbody>
                         {% for task in tasks %}
                             <tr>
-                                <td>{{task.task_added_at|date:"d/m/Y H:i"}} </td>
-                                <td>{{task.task_updated_at|date:"d/m/Y H:i"}} </td>
-                                <td style="vertical-align:middle">
-                                    {% if task.is_solved and task.assigned_to == request.user %}
-                                        <form method="post" action="{% url 'mark_task_unsolved' task.pk %}">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Once you are marking this task as unsolved, the task wikk return to the User responsible for it, ok?')" >Unsolve</button>
-                                        </form>
-                                    {% else %}
-                                        <span class="text-success">Solved</span>
-                                    {% endif %}
-                                </td>                                <td>{{ task.order_id }}</td>
-                                <td>{{ task.created_at|date:"d/m/Y H:i"}}</td>
+                                <td>{{ task.order_id }}</td>
+                                <td>{{task.task_added_at|date:"d/m/Y"}} </td>
+                                <td><a href="{{ task.order_link }}">{{ task.order_link }}</a></td>
+                                <td>{{ task.created_at|date:"d/m/Y" }}</td>
                                 <td><a href="{% url 'parceiro_tasks' pk=task.parceiro.pk %} ">{{ task.partner }}</a></td>
-                                <td><a href="{{task.order_link}} ">{{ task.order_link }}</a></td>
-                                <td>{{ task.loja_id }}</td>
                                 <td>{{ task.loja }}</td>
                                 <td>{{ task.empresa }}</td>
-
                                 <td>{{ task.integracao }}</td>
                                 <td>{{ task.origin }}</td>
                                 <td>{{ task.name }}</td>
