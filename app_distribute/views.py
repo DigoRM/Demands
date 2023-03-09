@@ -388,17 +388,18 @@ def parceiro_tasks(request, pk=None):
         if assigned_to:
             assigned_tasks.setdefault(assigned_to.username, []).append(task)  
 
-    if request.method == 'POST':
+    form = None
+    if parceiro_tasks.exists() and request.method == 'POST':
+        task = parceiro_tasks.first()
         form = TaskDescriptionForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
             messages.success(request, 'Description added successfully!')
-
             return redirect('parceiro_tasks')
-    else:
+    elif parceiro_tasks.exists():
+        task = parceiro_tasks.first()
         form = TaskDescriptionForm(instance=task)
 
-    
     context = {
         'parceiro': parceiro,
         'assigned_tasks': assigned_tasks,
@@ -718,11 +719,12 @@ def user_reports_specific(request, pk):
 
 def parceiro_reports(request):
     parceiros = Parceiro.objects.annotate(
-    num_tasks=Count('tasks', filter=Q(tasks__is_solved=False)),
+    num_tasks=Count('tasks'),
+    num_unsolved_tasks=Count('tasks', filter=Q(tasks__is_solved=False)),
     num_solved_tasks=Count('tasks', filter=Q(tasks__is_solved=True)),
     prejudice=Sum('tasks__price', filter=Q(tasks__is_solved=False)),
     contribution=Sum('tasks__price', filter=Q(tasks__is_solved=True))
-)
+).order_by('num_tasks')  
     parceiros_count = Parceiro.objects.count()
 
 
@@ -747,12 +749,12 @@ def parceiro_reports(request):
     layout = go.Layout(
         title='Tasks associated', 
         barmode='stack', 
-        height=len(parceiros)*parceiros_count  # set the height based on the number of Parceiros
+        height=len(parceiros)*parceiros_count*1.5  # set the height based on the number of Parceiros
         )
     layout2 = go.Layout(
         title='Tasks values', 
         barmode='stack', 
-        height=len(parceiros)*parceiros_count  # set the height based on the number of Parceiros
+        height=len(parceiros)*parceiros_count*1.5  # set the height based on the number of Parceiros
         )
 
 
