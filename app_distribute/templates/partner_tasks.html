@@ -51,11 +51,7 @@
                                         {% endif %}
                                     </td>
                                     <td class="text-center">
-                                        <form method="POST" action="{% url 'edit_description' task.pk %}">
-                                            {% csrf_token %}
-                                            {{ form.description }}
-                                            <button type="submit" class="btn btn-sm btn-info">Save</button>
-                                        </form>
+                                        {{task.description}}
                                     </td>
                                     <td>{{ task.created_at|date:"d/m/Y" }}</td>
                                     <td>{{ task.loja_id }}</td>
