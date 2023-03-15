@@ -159,7 +159,7 @@ def my_tasks(request, pk=None):
     # Retrieve all unsolved tasks and group by Parceiro
     partner_tasks = {}
     for partner in Parceiro.objects.annotate(num_tasks=Count('tasks', filter=Q(tasks__is_solved=False))).order_by('-num_tasks'):
-        partner_tasks[partner] = tasks.filter(partner=partner).order_by('-task_added_at')[:50]
+        partner_tasks[partner] = tasks.filter(partner=partner)[:50]
 
     forms = []
     for partner, tasks in partner_tasks.items():
